@@ -1,0 +1,295 @@
+
+from together import Together
+import os
+import pandas as pd
+import time
+import random
+
+# Set the Together.ai API key
+os.environ["TOGETHER_API_KEY"] = "ee7d07fda7579498d155f071531116956dbbf74237cf4710cad83893a0a0df30"
+client = Together()
+
+# New lists of first names and last names
+first_names = ["Arjun", "Vikas", "Neel", "Aarav", "Raj", "Sahil", "Viren", "Karan", "Pranav", "Manav", "Aryan", "Rohan", "Kunal", "Anuj", "Avi", "Deepak", "Sandeep", "Ishaan", "Nikhil", "Vishal"]
+last_names = ["Kapoor", "Patel", "Mehta", "Sharma", "Iyer", "Rao", "Chopra", "Singh", "Reddy", "Verma", "Bansal", "Bedi", "Chaudhary", "Kumar", "Garg", "Joshi", "Saxena", "Kohli", "Dixit", "Shah"]
+
+# Designations, skills, domains remain the same as in your original code
+designations = {
+    "Data Scientist": {
+        "skills": ["Machine Learning", "Statistics", "Data Visualization", "Big Data", "Programming (Python, R)"],
+        "domains": ["Healthcare", "Finance", "Retail"]
+    },
+    "Software Engineer": {
+        "skills": ["Software Development", "Algorithms and Data Structures", "Version Control (Git)", "Database Management", "Web Development"],
+        "domains": ["E-commerce", "Banking", "Education"]
+    },
+    "Data Engineer": {
+        "skills": ["Data Warehousing", "ETL Processes", "Big Data Technologies (Hadoop, Spark)", "Database Administration", "Cloud Services (AWS, Azure)"],
+        "domains": ["Logistics", "Finance", "Healthcare"]
+    },
+    "UI Designer": {
+        "skills": ["User Experience (UX) Design", "Prototyping", "Graphic Design", "Interaction Design", "Front-End Development (HTML, CSS, JavaScript)"],
+        "domains": ["Gaming", "Retail", "Media"]
+    },
+    "Data Analyst": {
+        "skills": ["Data Visualization", "SQL", "Statistics", "Excel/Spreadsheet Analysis", "Business Intelligence (BI) Tools"],
+        "domains": ["Marketing", "Finance", "Healthcare"]
+    },
+    "Product Manager": {
+        "skills": ["Product Strategy", "Project Management", "Market Research", "Agile Methodologies", "Stakeholder Communication"],
+        "domains": ["Technology", "Retail", "Finance"]
+    }
+}
+
+# Experience levels and work environments
+experience_levels = ["Entry-level", "Mid-level", "Senior-level", "Lead", "Director"]
+work_environments = ["Remote", "Hybrid", "In-office"]
+
+# Predefined reasoning sets
+select_reasons = [
+    "Demonstrated strong skills relevant to the role.",
+    "Exhibited excellent problem-solving abilities.",
+    "Showed great enthusiasm and potential for growth.",
+    "Had impressive experience and qualifications.",
+    "Communicated ideas clearly and effectively."
+]
+reject_reasons = [
+    "Lacked key technical skills for the role.",
+    "Demonstrated limited understanding of job requirements.",
+    "Had insufficient experience for the position.",
+    "Struggled to effectively communicate ideas.",
+    "Needed improvement in problem-solving skills."
+]
+
+# Function to generate a text response based on the given prompt
+def generate_text(prompt):
+    response = client.chat.completions.create(
+        model="meta-llama/Llama-Vision-Free",
+        messages=[{"role": "user", "content": f":{prompt}"}],
+    )
+    return response.choices[0].message.content
+
+# Generating data for the table
+data = []
+for i in range(501):  # Adjust the range to generate more candidates if needed
+    id_formatted = f"nandbo{i+1:04d}"  # ID in the format nandbo1, nandbo2, etc.
+    first_name = random.choice(first_names)
+    last_name = random.choice(last_names)
+    full_name = f"{first_name} {last_name}"
+
+    designation = random.choice(list(designations.keys()))
+    expected_experience = random.choice(["0-2 years", "3-5 years", "6-8 years", "9+ years"])
+    domains_needed = ", ".join(designations[designation]["domains"])
+    job_description = f"Expected_experience: {expected_experience}, Domains: {domains_needed}"
+
+    # Determine if the candidate should be selected or rejected
+    select_status = random.choice(["Select", "Reject"])
+
+    # Randomize experience level and work environment
+    experience_level = random.choice(experience_levels)
+    work_environment = random.choice(work_environments)
+
+    # Randomly select languages
+    selected_languages = random.sample(["English", "Hindi", "Tamil", "Marathi", "Telugu"], k=random.randint(1, 3))
+
+    # Select reasons for decision
+    reasons = random.sample(
+        select_reasons if select_status == "Select" else reject_reasons,
+        2
+    )
+
+    # Define prompt templates for transcripts, profiles
+    prompt_templates = {
+        "Select": {
+            "transcript": (
+                f"Generate a positive, detailed interview transcript for candidate {full_name} interviewing for the role of {designation}. "
+                f"Job description: '{job_description}'. Highlight strengths such as demonstrated skills in {', '.join(designations[designation]['skills'])}, "
+                f"excellent problem-solving abilities, enthusiasm, and potential for growth. Emphasize their impressive experience in {domains_needed}. "
+                f"Do not generate generic statements like 'Here is an interview transcript for ...'."
+            ),
+            "profile": (
+                f"Generate a positive, detailed profile for candidate {full_name} who is interviewing for the role of {designation}. "
+                f"Highlight their strengths, such as a solid foundation in key skills like {', '.join(designations[designation]['skills'])}, "
+                f"relevant domain experience in {', '.join(domains_needed)}, and enthusiasm to contribute. Mention any noteworthy achievements, "
+                f"such as successful projects or past roles in similar domains. Mention their potential to excel and grow within the organization. "
+                f"Ensure that the profile is focused on showcasing their qualifications in the context of the job description."
+            ),
+        },
+        "Reject": {
+            "transcript": (
+                f"Generate a detailed, constructive interview transcript for candidate {full_name} interviewing for the role of {designation}. "
+                f"Job description: '{job_description}'. Mention areas of improvement, such as lacking key technical skills in {', '.join(designations[designation]['skills'])}, "
+                f"insufficient experience in the required domains, and limited understanding of job requirements. Highlight reasons like 'Struggled to communicate ideas' or 'Needed improvement in problem-solving skills'. "
+                f"Do not generate generic statements like 'Here is an interview transcript for ...'."
+            ),
+            "profile": (
+                f"Generate a detailed profile for candidate {full_name} who is interviewing for the role of {designation}. "
+                f"Focus on areas where the candidate's skills did not align with the job requirements, such as lacking proficiency in {', '.join(designations[designation]['skills'])}, "
+                f"or insufficient experience in {', '.join(domains_needed)}. Mention any concerns raised during the interview, such as difficulty with certain tasks or lack of familiarity with specific tools or technologies. "
+                f"Despite these gaps, acknowledge their potential for growth if given further training or exposure. "
+                f"Ensure that the profile emphasizes constructive feedback while being respectful."
+            ),
+        },
+    }
+
+    # Construct prompts based on the selection status
+    prompt_transcript = prompt_templates[select_status]["transcript"].format(full_name=full_name, designation=designation, job_description=job_description)
+    prompt_profile = prompt_templates[select_status]["profile"].format(full_name=full_name, designation=designation, job_description=job_description, experience_level=experience_level, work_environment=work_environment, languages_known=", ".join(selected_languages), expected_experience=expected_experience, domains_needed=domains_needed)
+
+    # Generate the transcript and profile
+    transcript = generate_text(prompt_transcript)
+    time.sleep(5)
+    profile = generate_text(prompt_profile)
+    time.sleep(5)
+
+    # Add to dataset
+    data.append({
+        "Id": id_formatted,
+        "Name": full_name,
+        "Role": designation,
+        "Transcript": transcript,
+        "Profile": profile,
+        "Select/Reject": select_status,
+        "Job Description": job_description,
+        "Reason for Decision": ", ".join(reasons),
+        })
+
+# Convert to DataFrame and save as Excel
+df = pd.DataFrame(data)
+print(df)
+df.to_excel("E://datascience//interview_data.xlsx", index=False)
+
+import asyncio
+import random
+import os
+from together import Together
+import pandas as pd
+
+# Set your Together.ai API key
+os.environ["TOGETHER_API_KEY"] = "ee7d07fda7579498d155f071531116956dbbf74237cf4710cad83893a0a0df30"
+client = Together()
+
+# Lists and predefined data
+names = ["John", "Jane", "Alex", "Michael", "Emily", "Sophie", "David", "Olivia", "Liam", "Charlotte"]
+last_names = ["Smith", "Johnson", "Brown", "Williams", "Davis", "Martinez", "Garcia", "Rodriguez", "Wilson", "Taylor"]
+languages_known = ["English", "Spanish", "French", "German", "Italian", "Japanese"]
+
+designations = {
+    "Data Scientist": {
+        "skills": ["Machine Learning", "Statistics", "Data Visualization", "Big Data", "Programming (Python, R)"],
+        "domains": ["Healthcare", "Finance", "Retail"]
+    },
+    "Software Engineer": {
+        "skills": ["Software Development", "Algorithms and Data Structures", "Version Control (Git)", "Database Management", "Web Development"],
+        "domains": ["E-commerce", "Banking", "Education"]
+    },
+    "Data Engineer": {
+        "skills": ["Data Warehousing", "ETL Processes", "Big Data Technologies (Hadoop, Spark)", "Database Administration", "Cloud Services (AWS, Azure)"],
+        "domains": ["Logistics", "Finance", "Healthcare"]
+    },
+    "UI Designer": {
+        "skills": ["User Experience (UX) Design", "Prototyping", "Graphic Design", "Interaction Design", "Front-End Development (HTML, CSS, JavaScript)"],
+        "domains": ["Gaming", "Retail", "Media"]
+    },
+    "Data Analyst": {
+        "skills": ["Data Visualization", "SQL", "Statistics", "Excel/Spreadsheet Analysis", "Business Intelligence (BI) Tools"],
+        "domains": ["Marketing", "Finance", "Healthcare"]
+    },
+    "Product Manager": {
+        "skills": ["Product Strategy", "Project Management", "Market Research", "Agile Methodologies", "Stakeholder Communication"],
+        "domains": ["Technology", "Retail", "Finance"]
+    }
+}
+
+select_reasons = ["Demonstrated strong skills relevant to the role.", "Exhibited excellent problem-solving abilities.", "Showed great enthusiasm and potential for growth."]
+reject_reasons = ["Lacked key technical skills for the role.", "Demonstrated limited understanding of job requirements.", "Had insufficient experience for the position."]
+
+# Helper function to simulate delay for API rate limiting
+async def rate_limited_sleep():
+    await asyncio.sleep(1)  # Sleep 1 second between requests (1 QPS)
+
+# Function to generate candidate data
+async def generate_candidate_data(i):
+    await rate_limited_sleep()  # Ensure rate limiting (1 request per second)
+
+    id_formatted = f"nandbo{i+1:03d}"
+    name = random.choice(names)
+    last_name = random.choice(last_names)
+    full_name = f"{name} {last_name}"
+
+    # Randomly select designation and generate a job description
+    designation = random.choice(list(designations.keys()))
+    expected_experience = random.choice(["0-2 years", "3-5 years", "6-8 years", "9+ years"])
+    domains_needed = ", ".join(designations[designation]["domains"])
+    job_description = f"Expected_experience : {expected_experience}, Domains: {domains_needed}"
+
+    # Select whether candidate is selected or rejected
+    select_status = random.choice(["Select", "Reject"])
+
+    # Randomly select experience level and work environment
+    experience_level = random.choice(["Entry-level", "Mid-level", "Senior-level", "Lead", "Director"])
+    work_environment = random.choice(["Remote", "Hybrid", "In-office"])
+
+    # Randomly select languages known
+    selected_languages = random.sample(languages_known, k=random.randint(1, len(languages_known)))
+
+    # Select reasons for decision (based on selection or rejection)
+    reasons = random.sample(select_reasons if select_status == "Select" else reject_reasons, 2)
+
+    # Prepare prompt templates for transcripts and profiles
+    prompt_transcript = f"Generate a {'positive' if select_status == 'Select' else 'constructive'} interview transcript for candidate {full_name} interviewing for the role of {designation}. " \
+                        f"Job description: '{job_description}'. Focus on {'strengths like skills and problem-solving' if select_status == 'Select' else 'areas for improvement like missing technical skills or lack of experience.'}"
+    
+    prompt_profile = f"Generate a {'positive' if select_status == 'Select' else 'constructive'} profile for candidate {full_name} interviewing for the role of {designation}. " \
+                     f"Focus on their {'strengths' if select_status == 'Select' else 'areas needing improvement'} in terms of skills, experience, and potential."
+
+    # API call for transcript
+    response_transcript = await client.chat.completions.create(
+        model="meta-llama/Llama-Vision-Free",
+        messages=[{"role": "user", "content": f":{prompt_transcript}"}]
+    )
+
+    # API call for profile
+    response_profile = await client.chat.completions.create(
+        model="meta-llama/Llama-Vision-Free",
+        messages=[{"role": "user", "content": f":{prompt_profile}"}]
+    )
+
+    transcript = response_transcript.choices[0].message.content
+    profile = response_profile.choices[0].message.content
+
+    return {
+        "Id": id_formatted,
+        "Name": full_name,
+        "Role": designation,
+        "Transcript": transcript,
+        "Profile": profile,
+        "Select/Reject": select_status,
+        "Job Description": job_description,
+        "Reason for Decision": ", ".join(reasons),
+    }
+
+# Function to generate candidates concurrently
+async def generate_candidates():
+    data = []
+    tasks = []
+    for i in range(200):  # Generate 200 candidates
+        task = asyncio.create_task(generate_candidate_data(i))
+        tasks.append(task)
+    
+    results = await asyncio.gather(*tasks)  # Await all tasks
+    data.extend(results)
+
+    return data
+
+# In Jupyter or interactive environments, use `await` directly
+data = await generate_candidates()
+
+# Convert to DataFrame
+df = pd.DataFrame(data)
+
+# Save to Excel file
+df.to_excel("E://datascience//BOJJA_NANDITHA_DATA.xlsx", index=False)
+
+
+	
