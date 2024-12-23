@@ -2,7 +2,7 @@ import os
 from pinecone import Pinecone, Index, ServerlessSpec
 
 # Load Pinecone API key from environment variables
-PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+PINECONE_API_KEY = os.getenv("pcsk_72SfXg_DRq7pthSRqALXrKNPVx2pZRwBfrUdsEsxzX1UVKSF8kRihGsHCfBkaY2zMLXzoi")
 
 # Initialize the Pinecone client
 pc = Pinecone()
