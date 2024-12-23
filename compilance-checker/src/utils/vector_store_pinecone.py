@@ -13,7 +13,7 @@ class PineconeVectorStore:
     def __init__(self, index_name: str):
         # Load environment variables
         load_dotenv()
-        pinecone_api_key = os.getenv("PINECONE_API_KEY")
+        pinecone_api_key = os.getenv("9312d1f7-9586-4d57-a033-3590ae384fde")
         pinecone_environment = os.getenv("PINECONE_ENVIRONMENT")
 
         if not pinecone_api_key or not pinecone_environment:
