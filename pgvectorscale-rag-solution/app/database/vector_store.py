@@ -109,7 +109,7 @@ class VectorStore:
             Basic search:
                 vector_store.search("What are your shipping options?")
             Search with metadata filter:
-                vector_store.search("Shipping options", metadata_filter={"category": "Shipping"})
+                vector_store.search("Shipping options", metadata_filter={"category": "Category"})
         
         Predicates Examples:
             Search with predicates:
