@@ -43,11 +43,6 @@ def prepare_record(row):
             "metadata": {
                 "Category": row["Category"],
                 "created_at": datetime.now().isoformat(),
-                "Resume":row["Resume"],
-                "created_at": datetime.now().isoformat(),
-                "Acceptances":row["Acceptances"],
-                "created_at": datetime.now().isoformat(),
-                "Job description":row["Job description"]
             },
             "contents": content,
             "embedding": embedding,
