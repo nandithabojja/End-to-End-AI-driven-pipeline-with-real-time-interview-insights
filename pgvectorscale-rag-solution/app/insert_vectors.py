@@ -35,7 +35,8 @@ def prepare_record(row):
 
         This is useful when your content already has an associated datetime.
     """
-    content = f"Question: {row['question']}\nAnswer: {row['answer']}"
+    content = f"JD NAME: {row['JD NAME']}\nJob Description: {row['JD']}\nRESUME: {row['RESUME']}\nInterview_Details: {row['Q AND A']}"
+
     embedding = vec.get_embedding(content)
     return pd.Series(
         {
