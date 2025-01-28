@@ -17,7 +17,7 @@ class SynthesizedResponse(BaseModel):
 class Synthesizer:
     def __init__(self):
         # Initialize Langfuse client
-        self.langfuse_client = langfuse.Client(api_key="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")
+        self.langfuse_client = langfuse.Client(api_key="api_key")
 
     @staticmethod
     def generate_response(question: str, context: pd.DataFrame) -> SynthesizedResponse:
@@ -82,7 +82,7 @@ class Synthesizer:
             str: The prompt text.
         """
         # Initialize Langfuse client (if not already initialized)
-        langfuse_client = langfuse.Client(api_key="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")
+        langfuse_client = langfuse.Client(api_key="api_key")
 
         # Fetch the prompt
         prompt = langfuse_client.get_prompt(prompt_id)
