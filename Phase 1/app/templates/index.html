@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Analyzer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <script>
+        // Function to display API response
+    function displayApiResponse(response) {
+        const responseContainer = document.getElementById("api-response");
+        responseContainer.innerHTML = `
+            <p><strong>Candidate Name:</strong> ${response.candidate_name || 'N/A'}</p>
+            <p><strong>Score:</strong> ${response.score || 'N/A'}</p>
+            <p><strong>Strengths:</strong> ${response.strengths || 'N/A'}</p>
+            <p><strong>Weaknesses:</strong> ${response.weaknesses || 'N/A'}</p>
+            <p><strong>Analysis:</strong> ${response.analysis || 'N/A'}</p>
+        `;
+    }
+
+    // Example usage (replace with actual response from the Together API)
+    const mockResponse = {
+        candidate_name: "John Doe",
+        score: 85,
+        strengths: "Excellent communication, leadership skills.",
+        weaknesses: "Limited technical certifications.",
+        analysis: "John's resume aligns well with the job description, with strong interpersonal skills and relevant experience."
+    };
+
+    // Simulate displaying the response
+    displayApiResponse(mockResponse);
+
+    </script>
+    <div class="container">
+        <h1>Resume Analyzer</h1>
+        <form action="/upload/" method="post" enctype="multipart/form-data">
+            <label for="files">Upload Resumes (PDFs):</label>
+            <input type="file" id="files" name="files" multiple accept="application/pdf">
+            <label for="job-description">Job Description:</label>
+            <textarea id="job-description" name="job_description" rows="4" cols="50"></textarea>
+            <button type="submit">Analyze</button>
+        </form>
+    </div>
+    <div id="api-response-container" style="margin-top: 20px;" class="container">
+        <!-- This section will display the Together API response -->
+        <h3>Analysis:</h3>
+        <div id="api-response" style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9;"></div>
+    </div>
+    
+    <div id="bot-usage-instructions" style="margin-top: 30px;" class="container">
+        <!-- Instructions on how to use the bot -->
+        <h3>How to Use the Bot:</h3>
+        <ul style="line-height: 1.8;">
+            <li>Upload a resume in PDF format using the "Analyze" button above.</li>
+            <li>The bot will analyze the resume and compare it against the provided job description.</li>
+            <li>Key details such as <strong>Candidate Name</strong>, <strong>Score</strong>, <strong>Strengths</strong>, <strong>Weaknesses</strong>, and a detailed analysis will be displayed here.</li>
+            <li>You can download the analysis in <strong>PDF</strong> and <strong>CSV</strong> formats.</li>
+            <li>Ensure the uploaded resume contains all relevant details for accurate analysis.</li>
+        </ul>
+    </div>
+    
+</body>
+</html>
